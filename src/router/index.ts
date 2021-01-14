@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "@/views/Home.vue";
+import Guild from "@/views/Guild.vue";
 
 Vue.use(VueRouter);
 
@@ -11,8 +12,9 @@ const routes: Array<RouteConfig> = [
     component: Home,
   },
   {
-    path: "/about",
-    name: "About",
+    path: "/guild/:guild",
+    name: "Guild",
+    component: Guild,
   },
 ];
 

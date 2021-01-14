@@ -1,6 +1,6 @@
 <template>
-  <div class="home">
-    <h2>서버를 선택해주세요.</h2>
+  <div class="guild">
+    <h1>역할</h1>
   </div>
 </template>
 
@@ -8,14 +8,14 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class Home extends Vue {}
+export default class Guild extends Vue {
+  async mounted() {}
+}
 </script>
 
 <style lang="scss" scoped>
-.home {
+.guild {
   display: flex;
-  justify-content: center;
-  align-items: center;
 
   background-color: #37393e;
 }
