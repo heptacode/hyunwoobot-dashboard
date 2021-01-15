@@ -45,7 +45,7 @@ const store: StoreOptions<RootState> = {
               .split("&")[1]
               .split("=")[1];
 
-            const payload = (await axios.get(state.proxy, { headers: { access_token: access_token } })).data;
+            const payload = (await axios.post(state.proxy, { access_token: access_token })).data;
 
             state.user = payload.user;
             state.guilds = payload.guilds;
