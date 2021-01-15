@@ -1,13 +1,13 @@
 <template>
   <div v-if="guilds && guilds.length" id="app">
-    <nav class="server">
-      <div class="server__item">
+    <nav class="app-server">
+      <div class="app-server__item">
         <transition name="expand">
-          <div v-if="guildHover === -1 || !$route.params.guild" class="server__item__indicator" :class="{ server__item__indicator__active: !$route.params.guild }"></div>
+          <div v-if="guildHover === -1 || !$route.params.guild" class="app-server__item__indicator" :class="{ 'app-server__item__indicator__active': !$route.params.guild }"></div>
         </transition>
         <img
-          class="server__item__icon server__item__icon__home"
-          :class="{ server__item__icon__active: !$route.params.guild }"
+          class="app-server__item__icon app-server__item__icon__home"
+          :class="{ 'app-server__item__icon__active': !$route.params.guild }"
           src="/img/icons/hyunwoo.png"
           width="48px"
           height="48px"
@@ -18,20 +18,20 @@
           @mouseout="guildHover = -2"
         />
         <transition name="pop">
-          <div v-if="guildHover === -1" class="server__item__tooltip">홈</div>
+          <div v-if="guildHover === -1" class="app-server__item__tooltip">홈</div>
         </transition>
       </div>
 
-      <div class="server__divider"></div>
+      <div class="app-server__divider"></div>
 
-      <div v-for="(i, idx) in guilds" :key="idx" class="server__item">
+      <div v-for="(i, idx) in guilds" :key="idx" class="app-server__item">
         <transition name="expand">
-          <div v-if="guildHover === idx || i.id === $route.params.guild" class="server__item__indicator" :class="{ server__item__indicator__active: i.id === $route.params.guild }"></div>
+          <div v-if="guildHover === idx || i.id === $route.params.guild" class="app-server__item__indicator" :class="{ 'app-server__item__indicator__active': i.id === $route.params.guild }"></div>
         </transition>
         <img
           v-if="i.icon"
-          class="server__item__icon"
-          :class="{ server__item__icon__active: i.id === $route.params.guild }"
+          class="app-server__item__icon"
+          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild }"
           width="48px"
           height="48px"
           :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
@@ -41,17 +41,17 @@
           @mouseover="guildHover = idx"
           @mouseout="guildHover = -2"
         />
-        <div v-else class="server__item__icon server__item__icon__empty" @click="selectGuild(idx)">{{ i.name }}</div>
+        <div v-else class="app-server__item__icon app-server__item__icon__empty" @click="selectGuild(idx)">{{ i.name }}</div>
         <transition name="pop">
-          <div v-if="guildHover === idx" class="server__item__tooltip">{{ i.name }}</div>
+          <div v-if="guildHover === idx" class="app-server__item__tooltip">{{ i.name }}</div>
         </transition>
       </div>
     </nav>
-    <div class="content-wrapper">
-      <nav class="appbar">
-        <h1 class="appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
+    <div class="app-content-wrapper">
+      <nav class="app-appbar">
+        <h1 class="app-appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
         <img
-          class="appbar__avatar"
+          class="app-appbar__avatar"
           width="40px"
           height="40px"
           :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/images/clyde.png`"
@@ -60,18 +60,18 @@
           @click="isActionVisible = !isActionVisible"
         />
         <transition name="slide">
-          <div v-if="isActionVisible" class="appbar__action">
+          <div v-if="isActionVisible" class="app-appbar__action">
             <div>
-              <span class="username">{{ user.username }}</span>
-              <span class="discriminator">#{{ user.discriminator }}</span>
+              <span class="app-appbar__action__username">{{ user.username }}</span>
+              <span class="app-appbar__action__discriminator">#{{ user.discriminator }}</span>
             </div>
             <md-button class="md-accent" @click="signout">로그아웃</md-button>
           </div>
         </transition>
       </nav>
-      <section class="content" @click="closeAll">
+      <section class="app-content" @click="closeAll">
         <transition name="fade">
-          <router-view class="content__router" />
+          <router-view class="app-content__router" />
         </transition>
       </section>
     </div>
@@ -184,7 +184,7 @@ body {
   overflow: hidden;
 }
 
-.server {
+.app-server {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -197,25 +197,24 @@ body {
   background-color: #202225;
   overflow: hidden scroll;
 
-  .server__divider {
+  .app-server__divider {
     width: 60%;
     border-bottom: 1px solid #444;
     margin-bottom: 12px;
   }
 
-  .server__item {
+  .app-server__item {
     display: flex;
     justify-content: center;
     align-items: center;
 
     margin-bottom: 12px;
 
-    .server__item__indicator {
+    .app-server__item__indicator {
       position: absolute;
       left: 0;
 
       width: 4px;
-      // height: 0;
       height: 22px;
 
       background-color: white;
@@ -223,12 +222,12 @@ body {
 
       transition: 0.2s;
 
-      &.server__item__indicator__active {
+      &.app-server__item__indicator__active {
         height: 40px;
       }
     }
 
-    .server__item__icon {
+    .app-server__item__icon {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -237,7 +236,7 @@ body {
 
       border-radius: 20px;
 
-      &.server__icon__empty {
+      &.app-server__icon__empty {
         width: 48px;
         height: 48px;
 
@@ -257,7 +256,7 @@ body {
       cursor: pointer;
 
       &:hover,
-      &.server__item__icon__active {
+      &.app-server__item__icon__active {
         border-radius: 14px;
       }
 
@@ -266,7 +265,7 @@ body {
         top: 1px;
       }
 
-      &.server__item__icon__home {
+      &.app-server__item__icon__home {
         background-color: #a6bbd7;
 
         &:hover {
@@ -274,7 +273,8 @@ body {
         }
       }
     }
-    .server__item__tooltip {
+
+    .app-server__item__tooltip {
       position: absolute;
       left: 75px;
 
@@ -293,11 +293,11 @@ body {
   }
 }
 
-.content-wrapper {
+.app-content-wrapper {
   width: 100%;
   height: 100%;
 
-  .appbar {
+  .app-appbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -308,10 +308,10 @@ body {
 
     border-bottom: 2px solid #2b2d31;
 
-    .appbar__title {
+    .app-appbar__title {
       margin-left: 12px;
     }
-    .appbar__avatar {
+    .app-appbar__avatar {
       margin-right: 12px;
       border-radius: 50%;
 
@@ -320,7 +320,7 @@ body {
 
       cursor: pointer;
     }
-    .appbar__action {
+    .app-appbar__action {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -334,21 +334,21 @@ body {
       border-radius: 5px;
       background-color: #18191c;
 
-      .username {
+      .app-appbar__action__username {
         font-weight: 700;
       }
-      .discriminator {
+      .app_appbar__action__discriminator {
         color: #72767d;
       }
     }
   }
 
-  .content {
+  .app-content {
     width: 100%;
     height: 100%;
     overflow: hidden;
 
-    .content__router {
+    .app-content__router {
       width: 100%;
       height: 100%;
       overflow: hidden auto;

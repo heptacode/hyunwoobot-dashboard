@@ -1,5 +1,5 @@
 <template>
-  <div class="guild">
+  <div class="app-guild">
     <Roles />
   </div>
 </template>
@@ -13,7 +13,7 @@ export default class Guild extends Vue {}
 </script>
 
 <style lang="scss" scoped>
-.guild {
+.app-guild {
   display: flex;
   flex-direction: column;
 }

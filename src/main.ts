@@ -5,9 +5,9 @@ import router from "./router";
 import store from "./store";
 import VueGtag from "vue-gtag";
 
-// Vue.use(VueGtag, {
-//   config: { id: "G-MQG6NYX9TY" },
-// });
+Vue.use(VueGtag, {
+  config: { id: "G-70PGH3D2QT" },
+});
 
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default-dark.css";

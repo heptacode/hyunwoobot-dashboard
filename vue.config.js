@@ -23,7 +23,7 @@ module.exports = {
   configureWebpack: {
     plugins: [
       new MangleCssClassPlugin({
-        classNameRegExp: "cl-[a-z][a-zA-Z0-9_]*",
+        classNameRegExp: "app-[a-z][a-zA-Z0-9_]*",
         log: true,
       }),
     ],

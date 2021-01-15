@@ -1,7 +1,7 @@
 <template>
-  <div class="roles">
-    <h1 class="roles__title">역할</h1>
-    <md-checkbox v-for="(i, idx) in guilds[guildIdx].userAssignableRoles" :key="idx" v-model="$store.state.roles" :value="i.id" class="roles__checkbox md-primary" @change="onRoleUpdate">
+  <div class="app-roles">
+    <h1 class="app-roles__title">역할</h1>
+    <md-checkbox v-for="(i, idx) in guilds[guildIdx].userAssignableRoles" :key="idx" v-model="$store.state.roles" :value="i.id" class="app-roles__checkbox md-primary" @change="onRoleUpdate">
       <h4 :style="`color: ${i.color}`">{{ i.name }}</h4>
     </md-checkbox>
   </div>
@@ -30,17 +30,17 @@ export default class Roles extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.roles {
+.app-roles {
   display: flex;
   flex-direction: column;
 
   padding: 30px;
 
-  .roles__title {
+  .app-roles__title {
     margin-bottom: 10px;
   }
 
-  .roles__checkbox {
+  .app-roles__checkbox {
     margin: 10px 0;
   }
 }
