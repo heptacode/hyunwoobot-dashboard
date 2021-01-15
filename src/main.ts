@@ -11,9 +11,10 @@ import VueGtag from "vue-gtag";
 
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default-dark.css";
-import { MdButton, MdRipple, MdTooltip } from "vue-material/dist/components";
+import { MdButton, MdCheckbox, MdRipple, MdTooltip } from "vue-material/dist/components";
 
 Vue.use(MdButton);
+Vue.use(MdCheckbox);
 Vue.use(MdRipple);
 Vue.use(MdTooltip);
 

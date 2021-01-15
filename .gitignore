@@ -2,7 +2,6 @@
 node_modules
 dist
 firebase
-.vercel
 
 
 # local env files

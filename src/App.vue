@@ -1,111 +1,120 @@
 <template>
-  <div v-if="$store.state.guilds.length" id="app">
-    <nav class="servers">
-      <div class="server-item">
-        <div v-if="guildHover === 'home' || !$route.params.guild" class="indicator" :class="{ active: !$route.params.guild }"></div>
-        <img class="icon home" src="/images/hyunwoo.png" width="48px" height="48px" alt="hyunwoo" draggable="false" @click="home" @mouseover="guildHover = 'home'" @mouseout="guildHover = ''" />
-        <md-tooltip md-direction="right">홈</md-tooltip>
+  <div v-if="guilds && guilds.length" id="app">
+    <nav class="server">
+      <div class="server__item">
+        <transition name="expand">
+          <div v-if="guildHover === -1 || !$route.params.guild" class="server__item__indicator" :class="{ server__item__indicator__active: !$route.params.guild }"></div>
+        </transition>
+        <img
+          class="server__item__icon server__item__icon__home"
+          :class="{ server__item__icon__active: !$route.params.guild }"
+          src="/img/icons/hyunwoo.png"
+          width="48px"
+          height="48px"
+          alt="hyunwoo"
+          draggable="false"
+          @click="selectGuild(-1)"
+          @mouseover="guildHover = -1"
+          @mouseout="guildHover = -2"
+        />
+        <transition name="pop">
+          <div v-if="guildHover === -1" class="server__item__tooltip">홈</div>
+        </transition>
       </div>
-      <div class="server-divider"></div>
-      <div v-for="(i, idx) in $store.state.guilds" :key="idx" class="server-item">
-        <div v-if="guildHover === i.id || i.id === $route.params.guild" class="indicator" :class="{ active: i.id === $route.params.guild }"></div>
+
+      <div class="server__divider"></div>
+
+      <div v-for="(i, idx) in guilds" :key="idx" class="server__item">
+        <transition name="expand">
+          <div v-if="guildHover === idx || i.id === $route.params.guild" class="server__item__indicator" :class="{ server__item__indicator__active: i.id === $route.params.guild }"></div>
+        </transition>
         <img
           v-if="i.icon"
-          class="icon"
-          :class="{ active: i.id === $route.params.guild }"
+          class="server__item__icon"
+          :class="{ server__item__icon__active: i.id === $route.params.guild }"
           width="48px"
           height="48px"
           :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
           :alt="i.name"
           draggable="false"
-          @click="selectGuild(i.id)"
-          @mouseover="guildHover = i.id"
-          @mouseout="guildHover = ''"
+          @click="selectGuild(idx)"
+          @mouseover="guildHover = idx"
+          @mouseout="guildHover = -2"
         />
-        <div v-else class="icon empty" @click="selectGuild(i.id)">{{ i.name }}</div>
-        <md-tooltip md-direction="right">{{ i.name }}</md-tooltip>
+        <div v-else class="server__item__icon server__item__icon__empty" @click="selectGuild(idx)">{{ i.name }}</div>
+        <transition name="pop">
+          <div v-if="guildHover === idx" class="server__item__tooltip">{{ i.name }}</div>
+        </transition>
       </div>
     </nav>
     <div class="content-wrapper">
       <nav class="appbar">
-        <h1 class="title">{{ $store.state.guild.id === $route.params.guild ? $store.state.guild.name : "홈" }}</h1>
+        <h1 class="appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
         <img
-          class="avatar"
+          class="appbar__avatar"
           width="40px"
           height="40px"
-          :src="$store.state.user.avatar ? `https://cdn.discordapp.com/avatars/${$store.state.user.id}/${$store.state.user.avatar}.png?size=64` : `/images/clyde.png`"
-          :alt="$store.state.user.username"
+          :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/images/clyde.png`"
+          :alt="user.username"
           draggable="false"
           @click="isActionVisible = !isActionVisible"
         />
         <transition name="slide">
-          <div v-if="isActionVisible" class="action">
+          <div v-if="isActionVisible" class="appbar__action">
             <div>
-              <span class="username">{{ $store.state.user.username }}</span>
-              <span class="discriminator">#{{ $store.state.user.discriminator }}</span>
+              <span class="username">{{ user.username }}</span>
+              <span class="discriminator">#{{ user.discriminator }}</span>
             </div>
             <md-button class="md-accent" @click="signout">로그아웃</md-button>
           </div>
         </transition>
       </nav>
-      <router-view class="content" />
+      <section class="content" @click="closeAll">
+        <transition name="fade">
+          <router-view class="content__router" />
+        </transition>
+      </section>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import axios from "axios";
+import { Action, Mutation, State } from "vuex-class";
 
 @Component
 export default class App extends Vue {
   isActionVisible: boolean = false;
-  guildHover: string = "";
+  guildHover: number = -2;
+  @State("user") user!: User;
+  @State("guilds") guilds!: Guild[];
+  @State("guildIdx") guildIdx!: number;
+  @State("roles") roles!: Guild;
+  @Mutation("signout") signout!: Function;
+  @Action("init") init!: Function;
+  @Action("getUserAssignableRoles") getUserAssignableRoles!: Function;
 
-  async mounted() {
-    const payload = JSON.parse(String(localStorage.getItem("hyunwoobot")));
-    this.$store.state.user = payload.user;
-    this.$store.state.guilds = payload.guilds;
+  mounted() {
+    this.init();
+  }
 
-    const hash = location.hash;
-    if (hash) {
-      location.hash = "";
-      if (hash && hash.length >= 90) {
-        const access_token = hash
-          .slice(1)
-          .split("&")[1]
-          .split("=")[1];
+  selectGuild(idx: number) {
+    if (idx === -1) {
+      if (!this.$route.params.guild) return;
 
-        const data = (await axios.post("/api", { access_token: access_token })).data;
+      this.$router.replace("/");
+      this.$store.state.guildIdx = -1;
+    } else {
+      if (this.$route.params.guild === this.guilds[idx].id) return;
 
-        console.log(data);
-        this.$store.state.guilds = data;
-        localStorage.setItem("hyunwoobot", JSON.stringify(data));
-
-        // location.replace("/");
-      }
+      this.$router.replace(`/guild/${this.guilds[idx].id}`);
+      this.$store.state.guildIdx = idx;
+      this.$store.state.roles = this.guilds[idx].roles;
     }
-
-    if (!this.$store.state.guilds)
-      return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F&response_type=token&scope=identify%20guilds`);
   }
 
-  home() {
-    if (!this.$route.params.guild) return;
-    this.$router.replace("/");
-    this.$store.state.guild = {};
-  }
-  selectGuild(id: string) {
-    if (this.$route.params.guild === id) return;
-
-    this.$router.replace(`/guild/${id}`);
-    this.$store.state.guild = this.$store.state.guilds.find((guild) => guild.id === id);
-  }
-
-  signout() {
-    this.$store.state.guilds = [];
-    this.$store.state.guild = {};
-    localStorage.clear();
+  closeAll() {
+    this.isActionVisible = false;
   }
 }
 </script>
@@ -120,6 +129,30 @@ export default class App extends Vue {
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
+}
+
+.pop-enter-active,
+.pop-leave-active {
+  transition: 0.15s cubic-bezier(0.86, 0, 0.07, 1);
+}
+.pop-enter,
+.pop-leave-to {
+  opacity: 0;
+}
+
+.expand-enter-active,
+.expand-leave-active {
+  position: absolute;
+  left: 100px;
+  height: 22px;
+  transition: 0.5s;
+}
+.expand-enter,
+.expand-leave-to {
+  left: 100px;
+  height: 0;
+  opacity: 0;
+  transition: 0.5;
 }
 
 .slide-enter-active,
@@ -151,7 +184,7 @@ body {
   overflow: hidden;
 }
 
-.servers {
+.server {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,24 +197,25 @@ body {
   background-color: #202225;
   overflow: hidden scroll;
 
-  .server-divider {
+  .server__divider {
     width: 60%;
     border-bottom: 1px solid #444;
     margin-bottom: 12px;
   }
 
-  .server-item {
+  .server__item {
     display: flex;
     justify-content: center;
     align-items: center;
 
     margin-bottom: 12px;
 
-    .indicator {
+    .server__item__indicator {
       position: absolute;
       left: 0;
 
       width: 4px;
+      // height: 0;
       height: 22px;
 
       background-color: white;
@@ -189,12 +223,12 @@ body {
 
       transition: 0.2s;
 
-      &.active {
+      &.server__item__indicator__active {
         height: 40px;
       }
     }
 
-    .icon {
+    .server__item__icon {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -203,7 +237,7 @@ body {
 
       border-radius: 20px;
 
-      &.empty {
+      &.server__icon__empty {
         width: 48px;
         height: 48px;
 
@@ -223,7 +257,7 @@ body {
       cursor: pointer;
 
       &:hover,
-      &.active {
+      &.server__item__icon__active {
         border-radius: 14px;
       }
 
@@ -232,13 +266,29 @@ body {
         top: 1px;
       }
 
-      &.home {
+      &.server__item__icon__home {
         background-color: #a6bbd7;
 
         &:hover {
           background-color: #7788d4;
         }
       }
+    }
+    .server__item__tooltip {
+      position: absolute;
+      left: 75px;
+
+      padding: 8px 15px;
+
+      box-shadow: 2px 2px 5px rgba(#000, 0.3);
+
+      border-radius: 8px;
+      background-color: #18191c;
+
+      font-size: 16px;
+      font-weight: 900;
+
+      z-index: 1;
     }
   }
 }
@@ -258,10 +308,10 @@ body {
 
     border-bottom: 2px solid #2b2d31;
 
-    .title {
+    .appbar__title {
       margin-left: 12px;
     }
-    .avatar {
+    .appbar__avatar {
       margin-right: 12px;
       border-radius: 50%;
 
@@ -270,7 +320,7 @@ body {
 
       cursor: pointer;
     }
-    .action {
+    .appbar__action {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -294,8 +344,17 @@ body {
   }
 
   .content {
+    width: 100%;
     height: 100%;
-    overflow-y: scroll;
+    overflow: hidden;
+
+    .content__router {
+      width: 100%;
+      height: 100%;
+      overflow: hidden auto;
+
+      background-color: #37393e;
+    }
   }
 }
 </style>
