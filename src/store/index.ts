@@ -15,7 +15,7 @@ interface RootState {
 }
 const store: StoreOptions<RootState> = {
   state: {
-    proxy: "http://bot.hyunwoo.dev/api/",
+    proxy: "https://bot.hyunwoo.dev/api/",
     user: null,
     guilds: [],
     guildIdx: -1,
@@ -57,7 +57,7 @@ const store: StoreOptions<RootState> = {
         }
 
         if (!state.user || !state.guilds)
-          return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=http%3A%2F%2F10.0.0.254%3A8080%2F&response_type=token&scope=guilds%20identify`);
+          return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=https%3A%2F%2Fbot.hyunwoo.dev%2F&response_type=token&scope=identify%20guilds`);
         else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
 
         for (let i = 0; i < state.guilds.length; i++) {
