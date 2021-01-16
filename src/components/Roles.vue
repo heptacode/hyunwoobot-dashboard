@@ -34,7 +34,7 @@ export default class Roles extends Vue {
   display: flex;
   flex-direction: column;
 
-  padding: 30px;
+  margin: 30px 30px 120px 30px;
 
   .app-roles__title {
     margin-bottom: 10px;
