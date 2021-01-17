@@ -35,7 +35,7 @@
         <img
           v-if="i.icon"
           class="app-server__item__icon"
-          :class="{ 'app-server__item__icon__disabled': isLoading, 'app-server__item__icon__active': i.id === $route.params.guild }"
+          :class="{ 'app-server__item__icon__disabled': isLoading, 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading }"
           width="48px"
           height="48px"
           :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"

@@ -50,7 +50,7 @@ const store: StoreOptions<RootState> = {
             .split("&")[1]
             .split("=")[1];
 
-          const payload = (await axios.post(`${state.mainPath}fetch`, { access_token: state.token })).data;
+          const payload = (await axios.post(`${state.mainPath}fetch`, { token: state.token })).data;
 
           state.user = payload.user;
           state.guilds = payload.guilds;

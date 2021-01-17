@@ -1,6 +1,6 @@
 <template>
   <div class="app-guild">
-    <Roles v-if="guilds[guildIdx].userAssignableRoles.length" />
+    <Roles v-if="guilds[guildIdx].userAssignableRoles && guilds[guildIdx].userAssignableRoles.length" />
   </div>
 </template>
 
@@ -13,6 +13,10 @@ import Roles from "@/components/Roles.vue";
 export default class Guild extends Vue {
   @State("guilds") guilds!: Guild;
   @State("guildIdx") guildIdx!: number;
+
+  mounted() {
+    if (this.$route.params.guild && !this.guilds[this.guildIdx].userAssignableRoles) return this.$router.replace("/");
+  }
 }
 </script>
 
