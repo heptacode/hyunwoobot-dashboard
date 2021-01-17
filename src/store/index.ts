@@ -29,33 +29,31 @@ const store: StoreOptions<RootState> = {
       state.guildIdx = -1;
       localStorage.clear();
 
-      $router.replace("/");
+      if ($router.currentRoute.path === "/") location.replace("/");
+      else $router.replace("/");
     },
   },
   actions: {
-    async init({ state, dispatch }) {
+    async init({ state }) {
       try {
         state.user = JSON.parse(String(localStorage.getItem("hyunwoobot.user")));
         state.guilds = JSON.parse(String(localStorage.getItem("hyunwoobot.guilds")));
 
-        const hash = location.hash;
-        if (hash) {
-          location.hash = "";
-          if (hash && hash.length >= 90) {
-            const access_token = hash
-              .slice(1)
-              .split("&")[1]
-              .split("=")[1];
+        const hash = $router.currentRoute.hash;
+        history.pushState("", document.title, window.location.pathname + window.location.search);
 
-            const payload = (await axios.post(state.proxy, { access_token: access_token })).data;
+        if (hash && hash.length >= 90) {
+          const access_token = hash
+            .slice(1)
+            .split("&")[1]
+            .split("=")[1];
 
-            state.user = payload.user;
-            state.guilds = payload.guilds;
-            localStorage.setItem("hyunwoobot.user", JSON.stringify(payload.user));
-            localStorage.setItem("hyunwoobot.guilds", JSON.stringify(payload.guilds));
+          const payload = (await axios.post(state.proxy, { access_token: access_token })).data;
 
-            $router.replace("/");
-          }
+          state.user = payload.user;
+          state.guilds = payload.guilds;
+          localStorage.setItem("hyunwoobot.user", JSON.stringify(payload.user));
+          localStorage.setItem("hyunwoobot.guilds", JSON.stringify(payload.guilds));
         }
 
         if (!state.user || !state.guilds)
