@@ -69,7 +69,7 @@
               <span class="app-appbar__action__username">{{ user.username }}</span>
               <span class="app-appbar__action__discriminator">#{{ user.discriminator }}</span>
             </div>
-            <md-button class="md-accent" @click="signout">로그아웃</md-button>
+            <md-button class="app-appbar__action__button__logout md-accent" @click="signout">로그아웃</md-button>
           </div>
         </transition>
       </nav>
@@ -360,8 +360,12 @@ body {
       .app-appbar__action__username {
         font-weight: 700;
       }
-      .app_appbar__action__discriminator {
+      .app-appbar__action__discriminator {
         color: #72767d;
+      }
+
+      .app-appbar__action__button__logout {
+        margin-left: 10px;
       }
     }
   }
