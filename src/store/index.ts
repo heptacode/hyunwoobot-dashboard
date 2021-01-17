@@ -8,6 +8,7 @@ Vue.use(Vuex);
 
 interface RootState {
   proxy: string;
+  isLoading: boolean;
   user: User | null;
   guilds: Guild[];
   guildIdx: number;
@@ -16,6 +17,7 @@ interface RootState {
 const store: StoreOptions<RootState> = {
   state: {
     proxy: "https://bot.hyunwoo.dev/api/",
+    isLoading: true,
     user: null,
     guilds: [],
     guildIdx: -1,
@@ -70,6 +72,13 @@ const store: StoreOptions<RootState> = {
 
           state.guilds[i].roles = (await axios.get(`${state.proxy}guild/${state.guilds[i].id}/member/${state.user.id}/roles`)).data;
         }
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    async getRoles({ state }) {
+      try {
+        state.guilds[state.guildIdx].roles = (await axios.get(`${state.proxy}guild/${state.guilds[state.guildIdx].id}/member/${state.user!.id}/roles`)).data;
       } catch (err) {
         console.error(err);
       }

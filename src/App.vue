@@ -26,12 +26,16 @@
 
       <div v-for="(i, idx) in guilds" :key="idx" class="app-server__item">
         <transition name="expand">
-          <div v-if="guildHover === idx || i.id === $route.params.guild" class="app-server__item__indicator" :class="{ 'app-server__item__indicator__active': i.id === $route.params.guild }"></div>
+          <div
+            v-if="(guildHover === idx || i.id === $route.params.guild) && !isLoading"
+            class="app-server__item__indicator"
+            :class="{ 'app-server__item__indicator__active': i.id === $route.params.guild }"
+          ></div>
         </transition>
         <img
           v-if="i.icon"
           class="app-server__item__icon"
-          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild }"
+          :class="{ 'app-server__item__icon__disabled': isLoading, 'app-server__item__icon__active': i.id === $route.params.guild }"
           width="48px"
           height="48px"
           :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
@@ -43,11 +47,11 @@
         />
         <div v-else class="app-server__item__icon app-server__item__icon__empty" @click="selectGuild(idx)">{{ i.name }}</div>
         <transition name="pop">
-          <div v-if="guildHover === idx" class="app-server__item__tooltip">{{ i.name }}</div>
+          <div v-if="guildHover === idx && !isLoading" class="app-server__item__tooltip">{{ i.name }}</div>
         </transition>
       </div>
     </nav>
-    <div class="app-content-wrapper">
+    <div class="app-content__wrapper">
       <nav class="app-appbar">
         <h1 class="app-appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
         <img
@@ -86,6 +90,7 @@ import { Action, Mutation, State } from "vuex-class";
 export default class App extends Vue {
   isActionVisible: boolean = false;
   guildHover: number = -2;
+  @State("isLoading") isLoading!: boolean;
   @State("user") user!: User;
   @State("guilds") guilds!: Guild[];
   @State("guildIdx") guildIdx!: number;
@@ -94,11 +99,14 @@ export default class App extends Vue {
   @Action("init") init!: Function;
   @Action("getUserAssignableRoles") getUserAssignableRoles!: Function;
 
-  mounted() {
-    this.init();
+  async mounted() {
+    await this.init();
+    this.$store.state.isLoading = false;
   }
 
   selectGuild(idx: number) {
+    if (this.isLoading) return;
+
     if (idx === -1) {
       if (!this.$route.params.guild) return;
 
@@ -255,6 +263,19 @@ body {
       }
       cursor: pointer;
 
+      &.app-server__item__icon__disabled {
+        filter: grayscale(1);
+        cursor: not-allowed;
+
+        &:hover {
+          border-radius: 20px;
+        }
+
+        &:active {
+          top: 0;
+        }
+      }
+
       &:hover,
       &.app-server__item__icon__active {
         border-radius: 14px;
@@ -293,7 +314,7 @@ body {
   }
 }
 
-.app-content-wrapper {
+.app-content__wrapper {
   width: 100%;
   height: 100%;
 

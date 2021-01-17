@@ -4,6 +4,7 @@ import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
 import VueGtag from "vue-gtag";
+import "@iconify/iconify";
 
 Vue.use(VueGtag, {
   config: { id: "G-70PGH3D2QT" },
