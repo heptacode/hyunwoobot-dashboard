@@ -38,10 +38,12 @@ const store: StoreOptions<RootState> = {
   actions: {
     async init({ state }) {
       try {
-        state.user = JSON.parse(String(localStorage.getItem("hyunwoobot.user")));
-        state.guilds = JSON.parse(String(localStorage.getItem("hyunwoobot.guilds")));
+        state.token = JSON.parse(String(localStorage.getItem("t")));
+        state.user = JSON.parse(String(localStorage.getItem("u")));
+        state.guilds = JSON.parse(String(localStorage.getItem("g")));
 
         const hash = $router.currentRoute.hash;
+        location.hash = "";
         history.pushState("", document.title, window.location.pathname + window.location.search);
 
         if (hash && hash.length >= 90) {
@@ -54,11 +56,12 @@ const store: StoreOptions<RootState> = {
 
           state.user = payload.user;
           state.guilds = payload.guilds;
-          localStorage.setItem("hyunwoobot.user", JSON.stringify(payload.user));
-          localStorage.setItem("hyunwoobot.guilds", JSON.stringify(payload.guilds));
+          localStorage.setItem("t", JSON.stringify(state.token));
+          localStorage.setItem("u", JSON.stringify(payload.user));
+          localStorage.setItem("g", JSON.stringify(payload.guilds));
         }
 
-        if (!state.user || !state.guilds)
+        if (!state.token || !state.user || !state.guilds)
           return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=https%3A%2F%2Fbot.hyunwoo.dev%2F&response_type=token&scope=identify%20guilds`);
         else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
 
