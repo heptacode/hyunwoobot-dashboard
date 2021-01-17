@@ -355,6 +355,8 @@ body {
       border-radius: 5px;
       background-color: #18191c;
 
+      z-index: 2;
+
       .app-appbar__action__username {
         font-weight: 700;
       }

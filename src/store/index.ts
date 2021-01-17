@@ -8,6 +8,7 @@ Vue.use(Vuex);
 
 interface RootState {
   mainPath: string;
+  token: string;
   isLoading: boolean;
   user: User | null;
   guilds: Guild[];
@@ -17,6 +18,7 @@ interface RootState {
 const store: StoreOptions<RootState> = {
   state: {
     mainPath: "https://bot.hyunwoo.dev/api/",
+    token: "",
     isLoading: true,
     user: null,
     guilds: [],
@@ -43,12 +45,12 @@ const store: StoreOptions<RootState> = {
         history.pushState("", document.title, window.location.pathname + window.location.search);
 
         if (hash && hash.length >= 90) {
-          const access_token = hash
+          state.token = hash
             .slice(1)
             .split("&")[1]
             .split("=")[1];
 
-          const payload = (await axios.post(`${state.mainPath}fetch`, { access_token: access_token })).data;
+          const payload = (await axios.post(`${state.mainPath}fetch`, { access_token: state.token })).data;
 
           state.user = payload.user;
           state.guilds = payload.guilds;
@@ -68,7 +70,7 @@ const store: StoreOptions<RootState> = {
               .get()
           ).data()!.userRoles;
 
-          state.guilds[i].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[i].id, member: state.user.id })).data;
+          state.guilds[i].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[i].id, member: state.user.id, token: state.token })).data;
         }
       } catch (err) {
         console.error(err);
@@ -76,14 +78,16 @@ const store: StoreOptions<RootState> = {
     },
     async getRoles({ state }) {
       try {
-        state.guilds[state.guildIdx].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id })).data;
+        state.guilds[state.guildIdx].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, token: state.token })).data;
       } catch (err) {
         console.error(err);
       }
     },
     async updateRoles({ state }) {
       try {
-        state.guilds[state.guildIdx].roles = (await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: state.roles })).data;
+        state.guilds[state.guildIdx].roles = (
+          await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: state.roles, token: state.token })
+        ).data;
       } catch (err) {
         console.error(err);
       }
