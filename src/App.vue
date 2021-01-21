@@ -58,7 +58,7 @@
           class="app-appbar__avatar"
           width="40px"
           height="40px"
-          :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/images/clyde.png`"
+          :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/img/icons/clyde.png`"
           :alt="user.username"
           draggable="false"
           @click="isActionVisible = !isActionVisible"
