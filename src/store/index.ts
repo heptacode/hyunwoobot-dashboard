@@ -2,7 +2,6 @@ import axios from "axios";
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 import $router from "@/router";
-import { firestore } from "@/firebase";
 
 Vue.use(Vuex);
 
@@ -66,13 +65,7 @@ const store: StoreOptions<RootState> = {
         else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
 
         for (let i = 0; i < state.guilds.length; i++) {
-          state.guilds[i].userAssignableRoles = (
-            await firestore
-              .collection(state.guilds[i].id)
-              .doc("config")
-              .get()
-          ).data()!.userRoles;
-
+          state.guilds[i].userAssignableRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[i].id, token: state.token })).data;
           state.guilds[i].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[i].id, member: state.user.id, token: state.token })).data;
         }
       } catch (err) {
