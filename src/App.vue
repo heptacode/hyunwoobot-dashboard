@@ -97,7 +97,6 @@ export default class App extends Vue {
   @State("roles") roles!: Guild;
   @Mutation("signout") signout!: Function;
   @Action("init") init!: Function;
-  @Action("getUserAssignableRoles") getUserAssignableRoles!: Function;
 
   async mounted() {
     await this.init();
@@ -309,7 +308,7 @@ body {
       font-size: 16px;
       font-weight: 900;
 
-      z-index: 1;
+      z-index: 10;
     }
   }
 }

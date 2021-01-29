@@ -10,7 +10,7 @@ interface Guild {
   owner: boolean;
   permissions: number;
   features: string[];
-  userAssignableRoles?: Role[];
+  userRoles?: Role[];
   roles?: Role[];
 }
 

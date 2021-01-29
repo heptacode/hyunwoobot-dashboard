@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "deploy": "vue-cli-service build && sudo rm -rf /var/www/hyunwoobot-dashboard/* && sudo mv dist/* /var/www/hyunwoobot-dashboard"
+    "deploy": "vue-cli-service build && rm -rf /var/www/hyunwoobot-dashboard/* && mv dist/* /var/www/hyunwoobot-dashboard"
   },
   "dependencies": {
     "@iconify/iconify": "^1.0.7",

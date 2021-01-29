@@ -15,8 +15,8 @@
         </div>
       </div>
     </div>
-    <md-checkbox v-for="(i, idx) in guilds[guildIdx].userAssignableRoles" :key="idx" v-model="$store.state.roles" :value="i.id" class="app-roles__checkbox md-primary" @change="onRoleUpdate">
-      <h4 :style="`color: ${i.color}`">{{ i.name }}</h4>
+    <md-checkbox v-for="(i, idx) in guilds[guildIdx].userRoles" :key="idx" v-model="roles" :value="i.id" class="app-roles__checkbox md-primary" @change="onRoleUpdate">
+      <h4 :style="i.color ? `color: ${i.color}` : ''">{{ i.name }}</h4>
     </md-checkbox>
   </div>
 </template>
@@ -29,19 +29,26 @@ import { Action, State } from "vuex-class";
 export default class Roles extends Vue {
   isReloading: boolean = false;
   reloadDelay: boolean = false;
+  roles: Role[] = [];
   timeout: number = -1;
   @State("guilds") guilds!: Guild;
   @State("guildIdx") guildIdx!: number;
   @Action("getRoles") getRoles!: Function;
   @Action("updateRoles") updateRoles!: Function;
 
+  @Watch("$route")
+  onRouteUpdate() {
+    this.roles = this.guilds[this.guildIdx].roles;
+  }
+
   mounted() {
-    if (!this.guilds[this.guildIdx].userAssignableRoles) return this.$router.replace("/");
+    if (!this.guilds[this.guildIdx].userRoles) return this.$router.replace("/");
+    this.roles = this.guilds[this.guildIdx].roles;
   }
 
   onRoleUpdate() {
     if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => this.updateRoles(), 1000);
+    this.timeout = setTimeout(() => this.updateRoles(this.roles), 1000);
   }
 
   async reload() {
@@ -49,6 +56,7 @@ export default class Roles extends Vue {
 
     this.isReloading = this.reloadDelay = true;
     await this.getRoles();
+    this.roles = this.guilds[this.guildIdx].roles;
     this.isReloading = false;
     setTimeout(() => (this.reloadDelay = false), 5000);
   }

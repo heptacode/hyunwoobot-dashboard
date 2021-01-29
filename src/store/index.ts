@@ -12,7 +12,6 @@ interface RootState {
   user: User | null;
   guilds: Guild[];
   guildIdx: number;
-  roles: Role[];
 }
 const store: StoreOptions<RootState> = {
   state: {
@@ -22,7 +21,6 @@ const store: StoreOptions<RootState> = {
     user: null,
     guilds: [],
     guildIdx: -1,
-    roles: [],
   },
   mutations: {
     signout(state) {
@@ -65,7 +63,7 @@ const store: StoreOptions<RootState> = {
         else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
 
         for (let i = 0; i < state.guilds.length; i++) {
-          state.guilds[i].userAssignableRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[i].id, token: state.token })).data;
+          state.guilds[i].userRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[i].id, token: state.token })).data;
           state.guilds[i].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[i].id, member: state.user.id, token: state.token })).data;
         }
       } catch (err) {
@@ -74,16 +72,15 @@ const store: StoreOptions<RootState> = {
     },
     async getRoles({ state }) {
       try {
+        state.guilds[state.guildIdx].userRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[state.guildIdx].id, token: state.token })).data;
         state.guilds[state.guildIdx].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, token: state.token })).data;
       } catch (err) {
         console.error(err);
       }
     },
-    async updateRoles({ state }) {
+    async updateRoles({ state }, roles: Role[]) {
       try {
-        state.guilds[state.guildIdx].roles = (
-          await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: state.roles, token: state.token })
-        ).data;
+        await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: roles, token: state.token });
       } catch (err) {
         console.error(err);
       }
