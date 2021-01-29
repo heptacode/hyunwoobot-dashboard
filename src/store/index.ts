@@ -1,7 +1,8 @@
 import axios from "axios";
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
-import $router from "@/router";
+import $router from "../router";
+import { Guild, User } from "../";
 
 Vue.use(Vuex);
 
@@ -12,6 +13,7 @@ interface RootState {
   user: User | null;
   guilds: Guild[];
   guildIdx: number;
+  roles: string[];
 }
 const store: StoreOptions<RootState> = {
   state: {
@@ -21,6 +23,7 @@ const store: StoreOptions<RootState> = {
     user: null,
     guilds: [],
     guildIdx: -1,
+    roles: [],
   },
   mutations: {
     signout(state) {
@@ -35,7 +38,7 @@ const store: StoreOptions<RootState> = {
   actions: {
     async init({ state }) {
       try {
-        state.token = JSON.parse(String(localStorage.getItem("t")));
+        state.token = String(localStorage.getItem("t"));
         state.user = JSON.parse(String(localStorage.getItem("u")));
         state.guilds = JSON.parse(String(localStorage.getItem("g")));
 
@@ -49,11 +52,11 @@ const store: StoreOptions<RootState> = {
             .split("&")[1]
             .split("=")[1];
 
-          const payload = (await axios.post(`${state.mainPath}fetch`, { token: state.token })).data;
+          const payload: { user: User; guilds: Guild[] } = (await axios.post(`${state.mainPath}fetch`, { token: state.token })).data;
 
           state.user = payload.user;
           state.guilds = payload.guilds;
-          localStorage.setItem("t", JSON.stringify(state.token));
+          localStorage.setItem("t", state.token);
           localStorage.setItem("u", JSON.stringify(payload.user));
           localStorage.setItem("g", JSON.stringify(payload.guilds));
         }
@@ -61,26 +64,23 @@ const store: StoreOptions<RootState> = {
         if (!state.token || !state.user || !state.guilds)
           return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=https%3A%2F%2Fbot.hyunwoo.dev%2F&response_type=token&scope=identify%20guilds`);
         else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
-
-        for (let i = 0; i < state.guilds.length; i++) {
-          state.guilds[i].userRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[i].id, token: state.token })).data;
-          state.guilds[i].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[i].id, member: state.user.id, token: state.token })).data;
-        }
       } catch (err) {
         console.error(err);
       }
     },
-    async getRoles({ state }) {
+    async getGuild({ state }) {
       try {
-        state.guilds[state.guildIdx].userRoles = (await axios.post(`${state.mainPath}userRoles`, { guild: state.guilds[state.guildIdx].id, token: state.token })).data;
-        state.guilds[state.guildIdx].roles = (await axios.post(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, token: state.token })).data;
+        const payload = (await axios.post(`${state.mainPath}guild`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, token: state.token })).data;
+        state.guilds[state.guildIdx].member = payload.member;
+        state.guilds[state.guildIdx].userRoles = payload.userRoles;
+        state.roles = state.guilds[state.guildIdx].member.roles;
       } catch (err) {
         console.error(err);
       }
     },
-    async updateRoles({ state }, roles: Role[]) {
+    async updateRoles({ state }) {
       try {
-        await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: roles, token: state.token });
+        await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: state.roles, token: state.token });
       } catch (err) {
         console.error(err);
       }

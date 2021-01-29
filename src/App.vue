@@ -11,7 +11,7 @@
           src="/img/icons/hyunwoo.png"
           width="48px"
           height="48px"
-          alt="hyunwoo"
+          alt="Home"
           draggable="false"
           @click="selectGuild(-1)"
           @mouseover="guildHover = -1"
@@ -85,6 +85,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { Action, Mutation, State } from "vuex-class";
+import { Guild, User } from "./";
 
 @Component
 export default class App extends Vue {
@@ -94,7 +95,6 @@ export default class App extends Vue {
   @State("user") user!: User;
   @State("guilds") guilds!: Guild[];
   @State("guildIdx") guildIdx!: number;
-  @State("roles") roles!: Guild;
   @Mutation("signout") signout!: Function;
   @Action("init") init!: Function;
 
@@ -116,7 +116,6 @@ export default class App extends Vue {
 
       this.$router.replace(`/guild/${this.guilds[idx].id}`);
       this.$store.state.guildIdx = idx;
-      this.$store.state.roles = this.guilds[idx].roles;
     }
   }
 

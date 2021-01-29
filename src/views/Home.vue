@@ -9,7 +9,8 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { Action, State } from "vuex-class";
-import Loading from "@/components/Loading.vue";
+import Loading from "../components/Loading.vue";
+import { Guild } from "../";
 
 @Component({ components: { Loading } })
 export default class Home extends Vue {
