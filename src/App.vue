@@ -50,6 +50,8 @@
           class="app-server__item__icon app-server__item__icon__noicon"
           :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
           @click="selectGuild(idx)"
+          @mouseover="guildHover = idx"
+          @mouseout="guildHover = -2"
         >
           {{ i.name }}
         </div>
@@ -264,7 +266,8 @@ body {
 
         background-color: #37393e;
 
-        &:hover {
+        &:hover,
+        &.app-server__item__icon__active {
           background-color: #7788d4;
         }
       }
