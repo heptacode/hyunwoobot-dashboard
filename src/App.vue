@@ -35,7 +35,7 @@
         <img
           v-if="i.icon"
           class="app-server__item__icon"
-          :class="{ 'app-server__item__icon__disabled': isLoading, 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading }"
+          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
           width="48px"
           height="48px"
           :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
@@ -45,7 +45,14 @@
           @mouseover="guildHover = idx"
           @mouseout="guildHover = -2"
         />
-        <div v-else class="app-server__item__icon app-server__item__icon__noicon" @click="selectGuild(idx)">{{ i.name }}</div>
+        <div
+          v-else
+          class="app-server__item__icon app-server__item__icon__noicon"
+          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
+          @click="selectGuild(idx)"
+        >
+          {{ i.name }}
+        </div>
         <transition name="pop">
           <div v-if="guildHover === idx && !isLoading" class="app-server__item__tooltip">{{ i.name }}</div>
         </transition>
@@ -242,6 +249,8 @@ body {
 
       transition: 0.25s;
 
+      cursor: pointer;
+
       &.app-server__item__icon__noicon {
         width: 48px;
         height: 48px;
@@ -259,7 +268,6 @@ body {
           background-color: #7788d4;
         }
       }
-      cursor: pointer;
 
       &.app-server__item__icon__disabled {
         filter: grayscale(1);
