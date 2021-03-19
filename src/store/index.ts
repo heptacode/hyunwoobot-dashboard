@@ -8,7 +8,7 @@ Vue.use(Vuex);
 
 interface RootState {
   mainPath: string;
-  token: string;
+  token: string | null;
   isLoading: boolean;
   user: User | null;
   guilds: Guild[];
@@ -27,20 +27,18 @@ const store: StoreOptions<RootState> = {
   },
   mutations: {
     signout(state) {
+      state.token = null;
       state.guilds = [];
       state.guildIdx = -1;
       localStorage.clear();
 
-      if ($router.currentRoute.path === "/") location.replace("/");
-      else $router.replace("/");
+      location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=https%3A%2F%2Fbot.hyunwoo.dev%2F&response_type=token&scope=identify%20guilds`);
     },
   },
   actions: {
-    async init({ state }) {
+    async init({ state, commit }) {
       try {
-        state.token = String(localStorage.getItem("t"));
-        state.user = JSON.parse(String(localStorage.getItem("u")));
-        state.guilds = JSON.parse(String(localStorage.getItem("g")));
+        state.token = localStorage.getItem("t") ? String(localStorage.getItem("t")) : null;
 
         const hash = $router.currentRoute.hash;
         location.hash = "";
@@ -52,18 +50,16 @@ const store: StoreOptions<RootState> = {
             .split("&")[1]
             .split("=")[1];
 
-          const payload: { user: User; guilds: Guild[] } = (await axios.post(`${state.mainPath}fetch`, { token: state.token })).data;
-
-          state.user = payload.user;
-          state.guilds = payload.guilds;
           localStorage.setItem("t", state.token);
-          localStorage.setItem("u", JSON.stringify(payload.user));
-          localStorage.setItem("g", JSON.stringify(payload.guilds));
         }
 
-        if (!state.token || !state.user || !state.guilds)
-          return location.replace(`https://discord.com/api/oauth2/authorize?client_id=796432154258440242&redirect_uri=https%3A%2F%2Fbot.hyunwoo.dev%2F&response_type=token&scope=identify%20guilds`);
-        else if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
+        if (!state.token) return commit("signout");
+
+        const payload: { user: User; guilds: Guild[] } = (await axios.post(`${state.mainPath}fetch`, { token: state.token })).data;
+        state.user = payload.user;
+        state.guilds = payload.guilds;
+
+        if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
       } catch (err) {
         console.error(err);
       }

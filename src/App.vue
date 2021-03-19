@@ -45,7 +45,7 @@
           @mouseover="guildHover = idx"
           @mouseout="guildHover = -2"
         />
-        <div v-else class="app-server__item__icon app-server__item__icon__empty" @click="selectGuild(idx)">{{ i.name }}</div>
+        <div v-else class="app-server__item__icon app-server__item__icon__noicon" @click="selectGuild(idx)">{{ i.name }}</div>
         <transition name="pop">
           <div v-if="guildHover === idx && !isLoading" class="app-server__item__tooltip">{{ i.name }}</div>
         </transition>
@@ -238,11 +238,11 @@ body {
       justify-content: center;
       align-items: center;
 
-      transition: 0.25s;
-
       border-radius: 20px;
 
-      &.app-server__icon__empty {
+      transition: 0.25s;
+
+      &.app-server__item__icon__noicon {
         width: 48px;
         height: 48px;
 
