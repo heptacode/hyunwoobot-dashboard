@@ -32,7 +32,7 @@ export default class Roles extends Vue {
 
   onRoleUpdate() {
     if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = window.setTimeout(() => this.updateRoles(), 3000);
+    this.timeout = window.setTimeout(() => this.updateRoles(), 1000);
   }
 }
 </script>
