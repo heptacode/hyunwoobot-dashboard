@@ -19,8 +19,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { Action, State } from "vuex-class";
-import { Guild, User } from "../";
+import { State } from "vuex-class";
+import { Guild, User } from "@/index";
 
 const activityTypes: { [key: string]: string } = {
   PLAYING: "하는 중",

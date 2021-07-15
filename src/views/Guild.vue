@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import { Action, State } from "vuex-class";
-import Member from "../components/Member.vue";
-import Roles from "../components/Roles.vue";
+import Member from "@/components/Member.vue";
+import Roles from "@/components/Roles.vue";
 
 @Component({ components: { Member, Roles } })
 export default class Guild extends Vue {

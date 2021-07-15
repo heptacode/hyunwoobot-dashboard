@@ -1,7 +1,5 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "@/views/Home.vue";
-import Guild from "@/views/Guild.vue";
 
 Vue.use(VueRouter);
 
@@ -9,12 +7,21 @@ const routes: RouteConfig[] = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: () => import("@/views/Home.vue"),
   },
   {
     path: "/guild/:guild",
     name: "Guild",
-    component: Guild,
+    component: () => import("@/views/Guild.vue"),
+  },
+  {
+    path: "/signout",
+    name: "Signout",
+    component: () => import("@/views/Signout.vue"),
+  },
+  {
+    path: "*",
+    redirect: "/",
   },
 ];
 

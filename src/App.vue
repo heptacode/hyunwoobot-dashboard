@@ -1,92 +1,100 @@
 <template>
-  <div v-if="guilds && guilds.length" id="app">
-    <nav class="app-server">
-      <div class="app-server__item">
-        <transition name="expand">
-          <div v-if="guildHover === -1 || !$route.params.guild" class="app-server__item__indicator" :class="{ 'app-server__item__indicator__active': !$route.params.guild }"></div>
-        </transition>
-        <img
-          class="app-server__item__icon app-server__item__icon__home"
-          :class="{ 'app-server__item__icon__active': !$route.params.guild }"
-          src="/img/icons/hyunwoo.png"
-          width="48px"
-          height="48px"
-          alt="Home"
-          draggable="false"
-          @click="selectGuild(-1)"
-          @mouseover="guildHover = -1"
-          @mouseout="guildHover = -2"
-        />
-        <transition name="pop">
-          <div v-if="guildHover === -1" class="app-server__item__tooltip">홈</div>
-        </transition>
-      </div>
-
-      <div class="app-server__divider"></div>
-
-      <div v-for="(i, idx) in guilds" :key="idx" class="app-server__item">
-        <transition name="expand">
-          <div
-            v-if="(guildHover === idx || i.id === $route.params.guild) && !isLoading"
-            class="app-server__item__indicator"
-            :class="{ 'app-server__item__indicator__active': i.id === $route.params.guild }"
-          ></div>
-        </transition>
-        <img
-          v-if="i.icon"
-          class="app-server__item__icon"
-          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
-          width="48px"
-          height="48px"
-          :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
-          :alt="i.name"
-          draggable="false"
-          @click="selectGuild(idx)"
-          @mouseover="guildHover = idx"
-          @mouseout="guildHover = -2"
-        />
-        <div
-          v-else
-          class="app-server__item__icon app-server__item__icon__noicon"
-          :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
-          @click="selectGuild(idx)"
-          @mouseover="guildHover = idx"
-          @mouseout="guildHover = -2"
-        >
-          {{ i.name }}
+  <div id="app">
+    <div v-if="guilds && guilds.length" class="app-app">
+      <nav class="app-server">
+        <div class="app-server__item">
+          <transition name="expand">
+            <div v-if="guildHover === -1 || !$route.params.guild" class="app-server__item__indicator" :class="{ 'app-server__item__indicator__active': !$route.params.guild }"></div>
+          </transition>
+          <img
+            class="app-server__item__icon app-server__item__icon__home"
+            :class="{ 'app-server__item__icon__active': !$route.params.guild }"
+            src="/img/icons/hyunwoo.png"
+            width="48px"
+            height="48px"
+            alt="Home"
+            draggable="false"
+            @click="selectGuild(-1)"
+            @mouseover="guildHover = -1"
+            @mouseout="guildHover = -2"
+          />
+          <transition name="pop">
+            <div v-if="guildHover === -1" class="app-server__item__tooltip">홈</div>
+          </transition>
         </div>
-        <transition name="pop">
-          <div v-if="guildHover === idx && !isLoading" class="app-server__item__tooltip">{{ i.name }}</div>
-        </transition>
-      </div>
-    </nav>
-    <div class="app-content__wrapper">
-      <nav class="app-appbar">
-        <h1 class="app-appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
-        <img
-          class="app-appbar__avatar"
-          width="40px"
-          height="40px"
-          :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/img/icons/clyde.png`"
-          :alt="user.username"
-          draggable="false"
-          @click="isActionVisible = !isActionVisible"
-        />
-        <transition name="slide">
-          <div v-if="isActionVisible" class="app-appbar__action">
-            <div>
-              <span class="app-appbar__action__username">{{ user.username }}</span>
-              <span class="app-appbar__action__discriminator">#{{ user.discriminator }}</span>
-            </div>
-            <md-button class="app-appbar__action__button__logout md-accent" @click="signout">로그아웃</md-button>
+
+        <div class="app-server__divider"></div>
+
+        <div v-for="(i, idx) in guilds" :key="idx" class="app-server__item">
+          <transition name="expand">
+            <div
+              v-if="(guildHover === idx || i.id === $route.params.guild) && !isLoading"
+              class="app-server__item__indicator"
+              :class="{ 'app-server__item__indicator__active': i.id === $route.params.guild }"
+            ></div>
+          </transition>
+          <img
+            v-if="i.icon"
+            class="app-server__item__icon"
+            :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
+            width="48px"
+            height="48px"
+            :src="`https://cdn.discordapp.com/icons/${i.id}/${i.icon}.png?size=64`"
+            :alt="i.name"
+            draggable="false"
+            @click="selectGuild(idx)"
+            @mouseover="guildHover = idx"
+            @mouseout="guildHover = -2"
+          />
+          <div
+            v-else
+            class="app-server__item__icon app-server__item__icon__noicon"
+            :class="{ 'app-server__item__icon__active': i.id === $route.params.guild && !isLoading, 'app-server__item__icon__disabled': isLoading }"
+            @click="selectGuild(idx)"
+            @mouseover="guildHover = idx"
+            @mouseout="guildHover = -2"
+          >
+            {{ i.name }}
           </div>
-        </transition>
+          <transition name="pop">
+            <div v-if="guildHover === idx && !isLoading" class="app-server__item__tooltip">{{ i.name }}</div>
+          </transition>
+        </div>
       </nav>
-      <section class="app-content" @click="closeAll">
-        <transition name="fade">
-          <router-view class="app-content__router" />
-        </transition>
-      </section>
+      <div class="app-content__wrapper">
+        <nav class="app-appbar">
+          <h1 class="app-appbar__title">{{ $route.params.guild && $route.params.guild === guilds[guildIdx].id ? guilds[guildIdx].name : "홈" }}</h1>
+          <img
+            class="app-appbar__avatar"
+            width="40px"
+            height="40px"
+            :src="user.avatar ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64` : `/img/icons/clyde.png`"
+            :alt="user.username"
+            draggable="false"
+            @click="isActionVisible = !isActionVisible"
+          />
+          <transition name="slide">
+            <div v-if="isActionVisible" class="app-appbar__action">
+              <div>
+                <span class="app-appbar__action__username">{{ user.username }}</span>
+                <span class="app-appbar__action__discriminator">#{{ user.discriminator }}</span>
+              </div>
+              <md-button class="app-appbar__action__button__logout md-accent" @click="signout">로그아웃</md-button>
+            </div>
+          </transition>
+        </nav>
+        <section class="app-content" @click="closeAll">
+          <transition name="fade">
+            <router-view class="app-content__router" />
+          </transition>
+        </section>
+      </div>
+    </div>
+    <div v-else-if="$route.path === '/signout'" class="app-app">
+      <router-view class="app-content__router" />
+    </div>
+    <div v-else class="app-app">
+      <Loading />
     </div>
   </div>
 </template>
@@ -94,9 +102,12 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { Action, Mutation, State } from "vuex-class";
-import { Guild, User } from "./";
+import Loading from "@/components/Loading.vue";
+import { Guild, User } from "@/index";
 
-@Component
+@Component({
+  components: { Loading },
+})
 export default class App extends Vue {
   isActionVisible: boolean = false;
   guildHover: number = -2;
@@ -188,6 +199,7 @@ body {
 
 #app {
   display: flex;
+  justify-content: center;
   height: 100%;
 
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -197,6 +209,13 @@ body {
 
   user-select: none;
   overflow: hidden;
+
+  .app-app {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .app-server {

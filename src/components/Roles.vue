@@ -12,7 +12,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Action, State } from "vuex-class";
-import { Guild } from "../";
+import { Guild } from "@/index";
 
 @Component
 export default class Roles extends Vue {
