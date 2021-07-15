@@ -60,25 +60,25 @@ const store: StoreOptions<RootState> = {
         state.guilds = payload.guilds;
 
         if ($router.currentRoute.params.guild) state.guildIdx = state.guilds.findIndex((guild: Guild) => guild.id === $router.currentRoute.params.guild);
-      } catch (err) {
-        console.error(err);
+      } catch {
+        return commit("signout");
       }
     },
-    async getGuild({ state }) {
+    async getGuild({ state, commit }) {
       try {
         const payload = (await axios.post(`${state.mainPath}guild`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, token: state.token })).data;
         state.guilds[state.guildIdx].member = payload.member;
         state.guilds[state.guildIdx].userRoles = payload.userRoles;
         state.roles = state.guilds[state.guildIdx].member.roles;
       } catch (err) {
-        console.error(err);
+        return commit("signout");
       }
     },
-    async updateRoles({ state }) {
+    async updateRoles({ state, commit }) {
       try {
         await axios.put(`${state.mainPath}roles`, { guild: state.guilds[state.guildIdx].id, member: state.user!.id, roles: state.roles, token: state.token });
       } catch (err) {
-        console.error(err);
+        return commit("signout");
       }
     },
   },
